@@ -1,0 +1,12 @@
+<ul class="tags">
+    {% for tag in all_tags %}
+        <li class="tags__item">
+            <a id="{{ tag.id }}"
+               class="tags__checkbox tags__checkbox_style_{{ tag.color }}{% if tag.id in tags %} tags__checkbox_active{% endif %}"
+               href="#"
+               ></a>
+               
+            <span class="tags__label">{{ tag.name }}</span>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load user_filters %}
+{% load static %}
+{% block main_css %}/static/pages/form.css{% endblock %}
+{% block title %}Войти{% endblock %}
+{% block header %}
+    <h1 class="main__title">Войти на сайт</h1>
+{% endblock %}
+{% block content %}
+        <div class="form-container">
+            <form class="form" method="post">
+                {% csrf_token %}
+                {% include 'includes/user_form.html' %}
+                <div class="form__footer">
+                    <button class="button button_style_blue">Войти</button>
+                    <a href="{% url 'password_reset' %}" class="form__forgot-link">Восстановить пароль</a>
+                </div>
+            </form>
+        </div>
+ 
+{% endblock %}

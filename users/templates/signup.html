@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load user_filters %}
+{% load static %}
+{% block main_css %}/static/pages/form.css{% endblock %}
+{% block title %}Зарегистрироваться{% endblock %}
+{% block header %}
+    <h1 class="main__title">Регистрация</h1>
+{% endblock %}
+
+{% block content %}
+    {% load user_filters %}
+        <span class="form-container">
+            <form class="form" method="post" action="{% url 'signup' %}">
+                {% csrf_token %}
+                {% include 'includes/user_form.html' %}
+                <div class="formfooter">
+                    <button class="button button_style_blue">Создать аккаунт
+                    </button>
+                </div>
+            </form>
+        </span>
+
+{% endblock %}
