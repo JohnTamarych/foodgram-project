@@ -11,3 +11,7 @@ class SignUp(CreateView):
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
 
+
+@login_required
+def profile(request):
+    return redirect(reverse('index'))

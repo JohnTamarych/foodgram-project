@@ -8,10 +8,19 @@ User = get_user_model()
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=256, verbose_name='Название ингредиента')
-    unit = models.CharField(max_length=64, verbose_name='Единицы измерения')
+    units = models.CharField(max_length=64, verbose_name='Единицы измерения')
 
     def __str__(self):
-        return '{}({})'.format(self.name, self.unit)
+        return '{}({})'.format(self.name, self.units)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'name',
+                    'units'],
+                name='unique ingredient'),
+        ]
 
 
 class Tag(models.Model):
@@ -24,9 +33,13 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=CASCADE, verbose_name='Автор рецепта')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='author')
     title = models.CharField(max_length=256, verbose_name='Название рецепта')
-    image = models.ImageField(upload_to='recipes/images/', verbose_name='Фото рецепта', blank=True, null=True)
+    image = models.ImageField(verbose_name='Фото рецепта', blank=True, null=False)
     description = models.TextField(verbose_name='Описание рецепта')
     cooking_time = models.PositiveIntegerField(help_text='min', verbose_name='Время приготовления')
     ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')

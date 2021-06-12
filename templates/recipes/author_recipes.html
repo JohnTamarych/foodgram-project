@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load user_filters %}
+{% load static %}
+{% load cache %}
+{% block title %}Последние обновления {{ author.username }}{% endblock %}
+{% block header %}
+    <h1 class="main__title">{{ author }}</h1>
+    {% include "includes/tags.html"  %}
+{% endblock %}
+
+{% block content %}
+    {% load sub_funcs %}
+        {% csrf_token %}
+        
+        {% if user.is_authenticated and request.user != author %}
+            <div class="author-subscribe" data-author="{{ author.id }}">
+                <p style="padding: 0 0 2em 0;">
+                            {% include 'includes/follow_button.html' with author=author %}
+                </p>
+            </div>
+        {% endif %}
+        <div class="card-list">
+            {% for item in page %}
+                {% include "includes/item_card.html" with item=item %}
+            {% endfor %}
+        </div>
+        {% if page and paginator.count >= 6 %}
+            {% include "includes/pagination.html" with items=page paginator=paginator %}
+        {% endif %}
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/components/MainCards.js"></script>
+
+    <script src="/static/js/components/Purchases.js"></script>
+    <script src="/static/js/components/Favorites.js"></script>
+    <script src="/static/js/components/Subscribe.js"></script>
+
+    <script src="/static/js/config/config.js"></script>
+    <script src="/static/js/components/AuthorRecipe.js"></script>
+    <script src="/static/js/components/Header.js"></script>
+
+    <script src="/static/js/api/Api.js"></script>
+    <script src="/static/authorRecipe.js"></script>
+{% endblock %}

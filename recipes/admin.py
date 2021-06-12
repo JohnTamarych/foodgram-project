@@ -1,18 +1,41 @@
 from django.contrib import admin
-from django.db import models
-from .models import Ingredient, Recipe, IngredientRecipe, Tag
+
+from .models import Recipe, Ingredient, IngredientRecipe, Follow, Tag
 
 
-class IngredientRecipeInline(admin.TabularInline):
+class IngredientRecipeInLine(admin.TabularInline):
     model = Recipe.ingredients.through
     extra = 1
 
 
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ("name", "units")
+    search_fields = ("name",)
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "color")
+    search_fields = ("title",)
+
+
 class RecipeAdmin(admin.ModelAdmin):
-    inlines = (IngredientRecipeInline, )
+    list_display = ("title", "description", "author")
+    search_fields = ("title",)
+    list_filter = ("pub_date",)
+    inlines = (IngredientRecipeInLine, )
+    empty_value_display = "-пусто-"
 
 
-admin.site.register(Ingredient)
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ("user", "author")
+
+
+class IngredientRecipeAdmin(admin.ModelAdmin):
+    list_display = ("ingredient", "recipe")
+
+
+admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(IngredientRecipe)
-admin.site.register(Tag)
+admin.site.register(IngredientRecipe, IngredientRecipeAdmin)
+admin.site.register(Follow, FollowAdmin)
+admin.site.register(Tag, TagAdmin)
