@@ -1,6 +1,6 @@
 from django import template
-from urllib.parse import urlencode
-from recipes.models import Follow, Favorite, Cart, Recipe
+
+from recipes.models import Cart, Favorite, Follow
 
 register = template.Library()
 
@@ -69,4 +69,4 @@ def tags_filter(request, tag):
 
 @register.filter
 def addclass(field, css):
-    return field.as_widget(attrs={"class": css})
+    return field.as_widget(attrs={'class': css})

@@ -1,33 +1,24 @@
-# from django.shortcuts import render, get_object_or_404, redirect
-# from django.views.generic import CreateView
-# from django.core.paginator import Paginator
-# from .utils import tags_stuff, used_tags
-# from .forms import RecipeForm
-# from .models import Recipe, Ingredient, Follow, User, IngredientRecipe, Tag, Favorite, Cart
-  
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Recipe, Ingredient, Follow, User, IngredientRecipe, Tag, Favorite, Cart
+from .models import Recipe, Ingredient, Follow, User, Tag, Favorite, Cart
 from django.core.paginator import Paginator
-from django.views.decorators.cache import cache_page
 from .forms import RecipeForm
 from django.http import JsonResponse, FileResponse
 from .utils import save_recipe, union_ingredients, tags_stuff, used_tags, get_ingredients
-# from .pdfwork import make_pdf
+from .pdfwork import make_pdf
 from django.urls import reverse
 import json
 
+
 def new_recipe(request):
     ingredients_exist = True
-    form = RecipeForm(request.POST or None, files=request.FILES or None)
+    form = RecipeForm(request.POST or None)
     if request.method == 'POST':
-        if form.is_valid() and len(get_ingredients(request))>0:
+        if form.is_valid() and len(get_ingredients(request)) > 0:
             new = save_recipe(request, form)
             return redirect('index')
-        form = RecipeForm(request.POST or None, files=request.FILES or None)
+        form = RecipeForm(request.POST or None)
         ingredients_exist = False
 
-    
     return render(
         request,
         'recipes/form_recipe.html',
@@ -49,14 +40,14 @@ def index(request):
     page = paginator.get_page(page_number)
 
     return render(request,
-                  'recipes/index.html',
-                {
+                  'recipes/index.html', {
                     'page': page,
                     'paginator': paginator,
                     'all_tags': Tag.objects.all(),
                     'tags': used_tags(request),
                 }
-                  )
+            )
+
 
 def single_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -68,6 +59,7 @@ def single_recipe(request, recipe_id):
             'recipe': recipe,
         }
     )
+
 
 def follow_index(request):
     recipe_list = Recipe.objects.order_by('-pub_date').filter(
@@ -92,6 +84,7 @@ def follow_index(request):
                   }
                   )
 
+
 def favorite(request):
     recipe_list = Recipe.objects.filter(favorite_recipes__user=request.user)
     recipe_list = tags_stuff(request, recipe_list)
@@ -107,6 +100,7 @@ def favorite(request):
                       'tags': used_tags(request),
                   }
                   )
+
 
 def shoplist(request):
     if request.user.is_authenticated:
@@ -125,6 +119,7 @@ def shoplist(request):
         }
     )
 
+
 def ingredients(request):
     name = request.GET['query']
     ingredients = Ingredient.objects.filter(
@@ -140,6 +135,7 @@ def ingredients(request):
         ],
         safe=False
     )
+
 
 def author_recipes(request, username):
     author = get_object_or_404(User, username=username)
@@ -166,7 +162,7 @@ def author_recipes(request, username):
         }
     )
 
-# @login_required()
+
 def edit_recipe(request, recipe_id):
     ingredients_exist = True
     recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -177,9 +173,8 @@ def edit_recipe(request, recipe_id):
                 kwargs={'id': recipe_id}
             )
         )
-    form = RecipeForm(request.POST or None, files=request.FILES or None,
-                      instance=recipe)
-    if form.is_valid() and len(get_ingredients(request))>0:
+    form = RecipeForm(request.POST or None, instance=recipe)
+    if form.is_valid() and len(get_ingredients(request)) > 0:
         new = save_recipe(request, form)
         return redirect('index')
 
@@ -188,7 +183,7 @@ def edit_recipe(request, recipe_id):
 
     return render(
         request,
-        'form_recipe.html',
+        'recipes/form_recipe.html',
         {
             'form': form,
             'edit': edit,
@@ -199,7 +194,6 @@ def edit_recipe(request, recipe_id):
     )
 
 
-# @login_required()
 def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
@@ -208,7 +202,6 @@ def delete_recipe(request, recipe_id):
     return redirect(reverse('index'))
 
 
-# @login_required
 def profile_follow(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -216,19 +209,17 @@ def profile_follow(request):
     author = get_object_or_404(User, id=author_id)
     if not Follow.objects.filter(user=request.user, author=author).exists():
         Follow.objects.create(user=request.user, author=author)
-    return JsonResponse({"success": True})
+    return JsonResponse({'success': True})
 
 
-# @login_required
 def profile_unfollow(request, author_id):
     author = get_object_or_404(User, id=author_id)
     follow = Follow.objects.filter(user=request.user, author=author)
     if follow.exists():
         follow.delete()
-    return JsonResponse({"success": False})
+    return JsonResponse({'success': False})
 
 
-# @login_required
 def add_to_favorites(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -236,18 +227,17 @@ def add_to_favorites(request):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if not Favorite.objects.filter(user=request.user, recipe=recipe).exists():
         Favorite.objects.create(user=request.user, recipe=recipe)
-    return JsonResponse({"success": True})
+    return JsonResponse({'success': True})
 
-# @login_required
+
 def remove_from_favorites(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     favorite = Favorite.objects.filter(user=request.user, recipe=recipe)
     if favorite.exists():
         favorite.delete()
-    return JsonResponse({"success": False})
+    return JsonResponse({'success': False})
 
 
-# @login_required
 def add_to_list(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -255,19 +245,17 @@ def add_to_list(request):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if not Cart.objects.filter(user=request.user, recipe=recipe).exists():
         Cart.objects.create(user=request.user, recipe=recipe)
-    return JsonResponse({"success": True})
+    return JsonResponse({'success': True})
 
 
-# @login_required
 def remove_from_list(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
     if cart.exists():
         cart.delete()
-    return JsonResponse({"success": False})
+    return JsonResponse({'success': False})
 
 
-# @login_required
 def remove_from_cart(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
@@ -275,11 +263,13 @@ def remove_from_cart(request, recipe_id):
         cart.delete()
     return redirect(reverse('shoplist'))
 
+
 def profile(request):
     return redirect(reverse('index'))
 
-# def download_pdf_ingredients(request):
-#     all_ingredients = union_ingredients(request)
-#     buffer = make_pdf(all_ingredients)
 
-#     return FileResponse(buffer, as_attachment=True, filename='to_buy.pdf')
+def download_pdf_ingredients(request):
+    all_ingredients = union_ingredients(request)
+    buffer = make_pdf(all_ingredients)
+
+    return FileResponse(buffer, as_attachment=True, filename='to_buy.pdf')

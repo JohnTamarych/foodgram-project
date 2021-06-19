@@ -1,14 +1,13 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.db.models.deletion import CASCADE
-from django.db.models.fields.files import ImageField
 
 User = get_user_model()
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Название ингредиента')
-    units = models.CharField(max_length=64, verbose_name='Единицы измерения')
+    name = models.CharField(max_length=256, verbose_name='ingredient name')
+    units = models.CharField(max_length=64, verbose_name='uits')
 
     def __str__(self):
         return '{}({})'.format(self.name, self.units)
@@ -38,17 +37,17 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name='author')
-    title = models.CharField(max_length=256, verbose_name='Название рецепта')
-    image = models.ImageField(verbose_name='Фото рецепта', blank=True, null=False)
-    description = models.TextField(verbose_name='Описание рецепта')
-    cooking_time = models.PositiveIntegerField(help_text='min', verbose_name='Время приготовления')
-    ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
+    title = models.CharField(max_length=256, verbose_name='recipe name')
+    image = models.ImageField(verbose_name='recipe picture', blank=True, null=False)
+    description = models.TextField(verbose_name='recipe description')
+    cooking_time = models.PositiveIntegerField(help_text='min', verbose_name='cooking time')
+    ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='ingredients')
     tags = models.ManyToManyField(
         Tag, related_name='recipes', verbose_name='tags')
     pub_date = models.DateTimeField(
         auto_now_add=True,
         db_index=True,
-        verbose_name='Дата публикации'
+        verbose_name='pub date'
     )
 
     def __str__(self):
@@ -56,9 +55,9 @@ class Recipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=CASCADE, verbose_name='Ингредиент')
-    recipe = models.ForeignKey(Recipe, on_delete=CASCADE, verbose_name='Рецепт')
-    value = models.FloatField(help_text='вставить ед.изм', verbose_name='Количество')
+    ingredient = models.ForeignKey(Ingredient, on_delete=CASCADE, verbose_name='ingredient')
+    recipe = models.ForeignKey(Recipe, on_delete=CASCADE, related_name='ingredient_recipe', verbose_name='recipe')
+    value = models.FloatField(help_text='вставить ед.изм', verbose_name='value')
 
     def __str__(self):
         return 'Ингредиент {}'.format(self.recipe)
@@ -93,7 +92,7 @@ class Favorite(models.Model):
         related_name='my_user',
         verbose_name='user')
     recipe = models.ForeignKey(
-        Recipe, 
+        Recipe,
         blank=True,
         on_delete=models.CASCADE,
         related_name='favorite_recipes',

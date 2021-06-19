@@ -1,14 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Recipe, Ingredient, Follow, User, IngredientRecipe, Tag, Cart
-from django.core.paginator import Paginator
-from django.views.decorators.cache import cache_page
-from .forms import RecipeForm
-from django.http import JsonResponse
-import json
 from django.db import transaction
-from collections import defaultdict
-from django.db.models import Sum, Max
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
+
+from .models import (Ingredient, IngredientRecipe)
 
 
 def get_ingredients(request):
@@ -50,17 +44,18 @@ def union_ingredients(request):
     items = IngredientRecipe.objects.filter(
         recipe__listed_recipes__user=request.user
     ).values(
-        'ingredient__name', 
+        'ingredient__name',
         'ingredient__units'
     ).annotate(
         amount=Sum('value')
     ).all()
 
     for item in items:
-        ingredient_name = f'{item["ingredient__name"]}, {item["ingredient__units"]}'
+        ingredient_name = f"{item['ingredient__name']}, {item['ingredient__units']}"
         combined_ingredients[ingredient_name] = item['amount']
 
     return combined_ingredients
+
 
 def tags_stuff(request, recipe_list):
     tags = used_tags(request)
