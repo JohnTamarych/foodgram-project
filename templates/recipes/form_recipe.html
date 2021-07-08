@@ -58,7 +58,7 @@
             <div class="form__group">
                 <label for="id_time" class="form__label">Время приготовления</label>
                 <div class="form__field-group form__field-group_time">
-                    <input type="text" id="id_time" name="cooking_time" class="form__input" {% if form.cooking_time.value != None %}value={{ form.cooking_time.value }} {% endif %}>
+                    <input type="text" id="id_time" name="cooktime" class="form__input" {% if form.cooking_time.value != None %}value={{ form.cooking_time.value }} {% endif %}>
                     <label for="id_time" class="form__label">минут</label>
                     <span class="form__error">{{ form.cooking_time.errors }}</span>
                 </div>
@@ -96,9 +96,10 @@
             
         </span>
 {% endblock %}
-
+{% block js %}
     <script src="/static/js/config/config.js"></script>
     <script src="/static/js/components/Header.js"></script>
     <script src="/static/js/utils/debouncing.js"></script>
     <script src="/static/js/api/Api.js"></script>
     <script src="/static/formRecipe.js"></script>
+{% endblock %}

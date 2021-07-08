@@ -6,7 +6,7 @@ from .models import Follow, Ingredient, IngredientRecipe, Recipe, Tag
 class IngredientRecipeInLine(admin.TabularInline):
     model = Recipe.ingredients.through
     extra = 1
-
+    min_num = 1
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'units')

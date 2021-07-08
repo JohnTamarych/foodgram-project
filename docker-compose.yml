@@ -1,0 +1,42 @@
+
+version: '3.8'
+
+volumes:
+  postgres_data:
+  static:
+  media:
+  nginx_conf:
+
+services:
+  db:
+    image: postgres:12.4
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  django:
+    build: .
+    depends_on:
+      - db
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - ./media:/code/media
+      - ./nginx.conf:/code/nginx/
+      - ./static:/code/static
+    # entrypoint: /code/entrypoint.sh
+
+  nginx:
+    image: nginx:1.19.0-alpine
+    ports:
+      - "80:80"
+    volumes:
+    - ./static:/code/foodgram/static
+    - ./media:/code/foodgram/media
+    - ./nginx.conf:/etc/nginx/conf.d/
+    depends_on:
+      - django
+    restart: always

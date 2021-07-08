@@ -15,8 +15,8 @@
                 {% include "includes/item_card.html" with item=item %}
             {% endfor %}
         </div>
-        {% if page and paginator.count >= 6 %}
-            {% include "includes/pagination.html" with items=page paginator=paginator %}
-        {% endif %}
+        
+            {% include "includes/pagination.html" with items=page paginator=page.paginator %}
+        
     
 {% endblock %}

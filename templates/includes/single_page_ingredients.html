@@ -1,0 +1,5 @@
+{% load sub_funcs %}
+{% for amount in recipe.ingredient_recipe.all %}
+    <p class=" single-card__section-item">{{ amount.ingredient.name }}
+        - {{ amount.value }} {{ amount.ingredient.units }}</p>
+{% endfor %}

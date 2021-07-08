@@ -20,6 +20,5 @@ urlpatterns = [
     path('purchases_cart/<int:recipe_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('subscriptions/', views.profile_follow, name='profile_follow'),
     path('subscriptions/<int:author_id>/', views.profile_unfollow, name='profile_unfollow'),
-    path("accounts/profile/", views.profile, name="profile"),
-    path('<str:username>/', views.author_recipes, name='author_recipes'),
+    path('users/<str:username>/', views.author_recipes, name='author_recipes'),
 ]

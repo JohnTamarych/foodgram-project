@@ -25,10 +25,10 @@ def listed_count(request):
 @register.simple_tag
 def author_recipes_left_count(author):
     recipes_count = author.recipes.count() - 3
-    if recipes_count % 10 == 1:
-        return f'Еще {recipes_count} рецепт...'
-    elif recipes_count > 10 and recipes_count < 15:
+    if recipes_count % 100 > 10 and recipes_count % 100 < 15:
         return f'Еще {recipes_count} рецептов...'
+    elif recipes_count % 10 == 1:
+        return f'Еще {recipes_count} рецепт...'
     elif recipes_count % 10 < 5:
         return f'Еще {recipes_count} рецепта...'
     else:
@@ -45,7 +45,7 @@ def other_page(request, page_number):
         return path.replace(f'page={this_page}', f'page={page_number}')
 
     if 'tag' in path and 'page' not in path:
-        return path + f'&page={page_number}'
+        return f'{path} &page={page_number}'
     return f'?page={page_number}'
 
 

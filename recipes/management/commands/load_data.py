@@ -6,7 +6,7 @@ from recipes.models import Ingredient
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = ''
 
     def handle(self, *args, **options):
         with open('recipes/data/ingredients.csv') as file:
@@ -15,4 +15,4 @@ class Command(BaseCommand):
                 row = row[0].split(';')
                 name = row[0]
                 unit = row[-1]
-                Ingredient.objects.get_or_create(name=name, unit=unit)
+                Ingredient.objects.get_or_create(name=name, units=unit)

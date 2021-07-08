@@ -3,7 +3,7 @@ from .models import Recipe, Ingredient, Follow, User, Tag, Favorite, Cart
 from django.core.paginator import Paginator
 from .forms import RecipeForm
 from django.http import JsonResponse, FileResponse
-from .utils import save_recipe, union_ingredients, tags_stuff, used_tags, get_ingredients
+from .utils import save_recipe, union_ingredients, tags_stuff, used_tags, get_ingredients, paginate_page
 from .pdfwork import make_pdf
 from django.urls import reverse
 import json
@@ -11,14 +11,15 @@ import json
 
 def new_recipe(request):
     ingredients_exist = True
-    form = RecipeForm(request.POST or None)
+    form = RecipeForm(request.POST or None, files=request.FILES or None)
     if request.method == 'POST':
-        if form.is_valid() and len(get_ingredients(request)) > 0:
+        if form.is_valid() and len(get_ingredients(request))>0:
             new = save_recipe(request, form)
             return redirect('index')
-        form = RecipeForm(request.POST or None)
+        form = RecipeForm(request.POST or None, files=request.FILES or None)
         ingredients_exist = False
 
+    
     return render(
         request,
         'recipes/form_recipe.html',
@@ -33,16 +34,11 @@ def new_recipe(request):
 def index(request):
     recipe_list = Recipe.objects.all()
     recipe_list = tags_stuff(request, recipe_list)
-
-    paginator = Paginator(recipe_list, 6)
-
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate_page(request, recipe_list)
 
     return render(request,
                   'recipes/index.html', {
                     'page': page,
-                    'paginator': paginator,
                     'all_tags': Tag.objects.all(),
                     'tags': used_tags(request),
                 }
@@ -70,15 +66,11 @@ def follow_index(request):
 
     follows = Follow.objects.filter(user=request.user)
     user_list = [follow.author for follow in follows]
-    paginator = Paginator(user_list, 6)
-
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate_page(request, user_list)
     return render(request,
                   'recipes/follow.html',
                   {
                       'page': page,
-                      'paginator': paginator,
                       'all_tags': Tag.objects.all(),
                       'tags': used_tags(request),
                   }
@@ -88,14 +80,11 @@ def follow_index(request):
 def favorite(request):
     recipe_list = Recipe.objects.filter(favorite_recipes__user=request.user)
     recipe_list = tags_stuff(request, recipe_list)
-    paginator = Paginator(recipe_list, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate_page(request, recipe_list)
     return render(request,
                   'recipes/favorites.html',
                   {
                       'page': page,
-                      'paginator': paginator,
                       'all_tags': Tag.objects.all(),
                       'tags': used_tags(request),
                   }
@@ -145,18 +134,14 @@ def author_recipes(request, username):
     ).order_by('-pub_date').filter(author=author)
 
     recipe_list = tags_stuff(request, recipe_list)
-    paginator = Paginator(recipe_list, 6)
-
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate_page(request, recipe_list)
 
     return render(
         request,
         'recipes/author_recipes.html',
         {
             'page': page,
-            'paginator': paginator,
-            'author': author,
+            'creator': author,
             'all_tags': Tag.objects.all(),
             'tags': used_tags(request),
         }
@@ -173,7 +158,7 @@ def edit_recipe(request, recipe_id):
                 kwargs={'id': recipe_id}
             )
         )
-    form = RecipeForm(request.POST or None, instance=recipe)
+    form = RecipeForm(request.POST or None, files=request.FILES or None, instance=recipe)
     if form.is_valid() and len(get_ingredients(request)) > 0:
         new = save_recipe(request, form)
         return redirect('index')
@@ -259,13 +244,10 @@ def remove_from_list(request, recipe_id):
 def remove_from_cart(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
-    if cart.exists():
-        cart.delete()
+    cart.delete()
     return redirect(reverse('shoplist'))
 
 
-def profile(request):
-    return redirect(reverse('index'))
 
 
 def download_pdf_ingredients(request):

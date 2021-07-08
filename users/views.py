@@ -9,9 +9,4 @@ from .forms import CreationForm
 class SignUp(CreateView):
     form_class = CreationForm
     success_url = reverse_lazy('login')
-    template_name = 'signup.html'
-
-
-@login_required
-def profile(request):
-    return redirect(reverse('index'))
+    template_name = 'users/signup.html'
