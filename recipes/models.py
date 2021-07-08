@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.deletion import CASCADE
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
@@ -44,7 +44,7 @@ class Recipe(models.Model):
             raise ValidationError(
                 _('Время пиготовления должно быть больше нуля'),
             )
-    
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -53,7 +53,10 @@ class Recipe(models.Model):
     title = models.CharField(max_length=256, verbose_name='recipe name')
     image = models.ImageField(verbose_name='recipe picture', blank=True, null=False)
     description = models.TextField(verbose_name='recipe description')
-    cooking_time = models.PositiveIntegerField(validators=[validate_zero], help_text='min', verbose_name='cooking time')
+    cooking_time = models.PositiveIntegerField(
+        validators=[validate_zero],
+        help_text='min',
+        verbose_name='cooking time')
     ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='ingredients')
     tags = models.ManyToManyField(
         Tag, related_name='recipes', verbose_name='tags')

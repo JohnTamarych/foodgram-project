@@ -1,9 +1,9 @@
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
 
-from .models import (Ingredient, IngredientRecipe)
+from .models import Ingredient, IngredientRecipe
 
 
 def paginate_page(request, recipe_list):
@@ -11,6 +11,7 @@ def paginate_page(request, recipe_list):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return page
+
 
 def get_ingredients(request):
     ingredients = {}

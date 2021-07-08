@@ -3,17 +3,11 @@ from django.forms import ModelForm
 
 from .models import Recipe
 
+
 class RecipeForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = True
-
-    # def clean(self):
-    #     super()
-    # def save(self):
-    #     super()
-
-
 
     class Meta:
         model = Recipe

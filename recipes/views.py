@@ -1,25 +1,27 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Recipe, Ingredient, Follow, User, Tag, Favorite, Cart
-from django.core.paginator import Paginator
-from .forms import RecipeForm
-from django.http import JsonResponse, FileResponse
-from .utils import save_recipe, union_ingredients, tags_stuff, used_tags, get_ingredients, paginate_page
-from .pdfwork import make_pdf
-from django.urls import reverse
 import json
+
+from django.core.paginator import Paginator
+from django.http import FileResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+
+from .forms import RecipeForm
+from .models import Cart, Favorite, Follow, Ingredient, Recipe, Tag, User
+from .pdfwork import make_pdf
+from .utils import (get_ingredients, paginate_page, save_recipe, tags_stuff,
+                    union_ingredients, used_tags)
 
 
 def new_recipe(request):
     ingredients_exist = True
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if request.method == 'POST':
-        if form.is_valid() and len(get_ingredients(request))>0:
+        if form.is_valid() and len(get_ingredients(request)) > 0:
             new = save_recipe(request, form)
             return redirect('index')
         form = RecipeForm(request.POST or None, files=request.FILES or None)
         ingredients_exist = False
 
-    
     return render(
         request,
         'recipes/form_recipe.html',
@@ -246,8 +248,6 @@ def remove_from_cart(request, recipe_id):
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
     cart.delete()
     return redirect(reverse('shoplist'))
-
-
 
 
 def download_pdf_ingredients(request):

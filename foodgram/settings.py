@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
-import os
+
 import environ
+from dotenv import find_dotenv, load_dotenv
 env = environ.Env()
 environ.Env.read_env()
-from dotenv import find_dotenv, load_dotenv
+
 
 load_dotenv(find_dotenv())
 
