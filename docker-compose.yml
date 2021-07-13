@@ -27,12 +27,11 @@ services:
       - ./media:/code/media
       - ./nginx.conf:/code/nginx/
       - ./static:/code/static
-    # entrypoint: /code/entrypoint.sh
 
   nginx:
     image: nginx:1.19.0-alpine
     ports:
-      - "80:80"
+      - "8084:80"
     volumes:
     - ./static:/code/foodgram/static
     - ./media:/code/foodgram/media
