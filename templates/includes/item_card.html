@@ -1,11 +1,11 @@
 {% load sub_funcs %}
 {% csrf_token %}
 <div class="card" data-id="{{ item.id }}">
-    <a href="{% url 'single' item.id %}" class="link" target="_blank">
+    <a href="{% url 'single' item.id %}" class="link">
         <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card__image">
     </a>
     <div class="card__body">
-        <a href="{% url 'single' item.id %}" class="card__title link" target="_blank">{{ item.title }}</a>
+        <a href="{% url 'single' item.id %}" class="card__title link">{{ item.title }}</a>
         <ul class="card__items">
             {% for tag in item.tags.all %}
                 <li class="card__item">
@@ -14,9 +14,9 @@
             {% endfor %}
         </ul>
         <div class="card__items card__items_column">
-            <p class="card__text"><span class="icon-time"></span> {{ item.cooking_time }} мин.</p>
+            {% include "includes/cooking_time.html" with cooktime=item.cooking_time %}
             <p class="card__text"><span class="icon-user"></span> 
-                <a href="{% url 'author_recipes' item.author.username %}" style="color: black">{{ item.author.username }}</a>
+                <a href="{% url 'author_recipes' item.author.username %}" style="color: black">{% firstof item.author.get_full_name item.author.username %}</a>
             </p>
         </div>
     </div>

@@ -3,7 +3,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 
-from .models import Ingredient, IngredientRecipe
+from .models import Ingredient, IngredientRecipe, Tag
 
 
 def paginate_page(request, recipe_list):
@@ -76,4 +76,7 @@ def used_tags(request):
     tags = set()
     if 'tag' in request.GET:
         tags = set(map(int, request.GET.getlist('tag')))
+    else:
+        for tag in Tag.objects.all():
+            tags.add(tag.pk)
     return tags

@@ -9,11 +9,11 @@
 {% endblock %}
 {% block content %}        
         <div class="card-list">
-            {% for author in page %}
-                {% include "includes/user_card.html" with author=author %}
+            {% for creator in page %}
+                {% include "includes/user_card.html" with author=creator %}
             {% endfor %}
         </div>
-        {% if page and page.paginator.count >= 6 %}
+        {% if page and page.paginator.count >= page_size %}
             {% include "includes/pagination.html" with items=page paginator=page.paginator %}
         {% endif %}
 {% endblock %}

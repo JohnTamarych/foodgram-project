@@ -2,9 +2,9 @@
 {% load user_filters %}
 {% load static %}
 {% load cache %}
-{% block title %}Последние обновления {{ creator.username }}{% endblock %}
+{% block title %}Последние обновления {% firstof creator.get_full_name creator.username %}{% endblock %}
 {% block header %}
-    <h1 class="main__title">{% firstof creator creator.username %}</h1>
+    <h1 class="main__title">{% firstof creator.get_full_name creator.username %}</h1>
     {% include "includes/tags.html"  %}
 {% endblock %}
 
@@ -20,13 +20,13 @@
             </div>
         {% endif %}
         <div class="card-list">
-            {% for item in page %}
-                {% include "includes/item_card.html" with item=item %}
+            {% for unit in page %}
+                {% include "includes/item_card.html" with item=unit %}
             {% endfor %}
         </div>
-     
+        {% if page and page.paginator.count >= page_size %}
             {% include "includes/pagination.html" with items=page paginator=page.paginator %}
-        
+        {% endif %}
 {% endblock %}
 
     <script src="/static/js/components/MainCards.js"></script>

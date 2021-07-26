@@ -26,7 +26,23 @@
                 </div>
 
                     <ul class="single-card__items">
-                            {% include 'includes/add_to_cart.html' with item=recipe %}
+                        {% if user.is_authenticated %}
+                        {% if request|is_listed:item %}
+                            <button class="button button_style_blue-outline" name="purchases">
+                                <span class="icon-check button__icon"></span>Убрать из покупок
+                            </button>
+                        {% else %}
+                            <button class="button button_style_blue" name="purchases" data-out>
+                                <span class="icon-plus button__icon"></span>Добавить в покупки
+                            </button>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'login' %}">
+                            <button class="button button_style_blue" name="purchases" data-out>
+                                <span class="icon-plus button__icon"></span>Добавить в покупки
+                            </button>
+                        </a>
+                    {% endif %}
 
                             {% if request.user != recipe.author %} 
                                 {% include 'includes/follow_button.html' with author=recipe.author %}

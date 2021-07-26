@@ -5,7 +5,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 Font_name = 'FreeSans'
-Font_ttf_name = 'FreeSans.ttf'
+Font_ttf_name = 'assets/fonts/FreeSans.ttf'
 Font_size = 13
 start_coordinates = 800
 delta_coordinates = 15

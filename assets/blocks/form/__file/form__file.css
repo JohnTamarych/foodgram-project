@@ -4,3 +4,12 @@
 .form__file[type='file'] {
     display: none;
 }
+.form__file-wrapper {
+ display: flex;
+ align-items: center;
+ overflow: hidden;
+}
+.form__filename {
+   margin: 0 0 0 10px;
+   font-family: 'Montserrat', sans-serif;
+}

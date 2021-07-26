@@ -8,6 +8,7 @@ class IngredientRecipeInLine(admin.TabularInline):
     extra = 1
     min_num = 1
 
+
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'units')
     search_fields = ('name',)

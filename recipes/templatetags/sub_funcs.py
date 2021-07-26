@@ -25,14 +25,14 @@ def listed_count(request):
 @register.simple_tag
 def author_recipes_left_count(author):
     recipes_count = author.recipes.count() - 3
-    if recipes_count % 100 > 10 and recipes_count % 100 < 15:
+    a = recipes_count % 10
+    if 10 < recipes_count % 100 < 15:
         return f'Еще {recipes_count} рецептов...'
-    elif recipes_count % 10 == 1:
+    if a == 1:
         return f'Еще {recipes_count} рецепт...'
-    elif recipes_count % 10 < 5:
+    if a < 5:
         return f'Еще {recipes_count} рецепта...'
-    else:
-        return f'Еще {recipes_count} рецептов...'
+    return f'Еще {recipes_count} рецептов...'
 
 
 @register.simple_tag
@@ -58,8 +58,12 @@ def followed(user, author):
 def tags_filter(request, tag):
     new_request = request.GET.copy()
     tags = request.GET.getlist('tag')
-    if str(tag) in request.GET.getlist('tag'):
+    if len(tags) != 1 and str(tag) in request.GET.getlist('tag'):
         tags = new_request.getlist('tag')
+        tags.remove(str(tag))
+        new_request.setlist('tag', tags)
+    elif tags == []:
+        tags = set(['1', '2', '3'])
         tags.remove(str(tag))
         new_request.setlist('tag', tags)
     else:

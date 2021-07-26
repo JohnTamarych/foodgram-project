@@ -20,9 +20,7 @@
                                  alt="{{ item.title }}"
                                  class="recipe__image recipe__image_big">
                             <h3 class="recipe__title">{{ item.title }}</h3>
-                            <p class="recipe__text"><span
-                                    class="icon-time"></span> {{ item.cooking_time }}
-                                мин.</p>
+                            {% include "includes/cooking_time.html" with cooktime=item.cooking_time %}
                         </div>
                         <a href="{% url 'remove_from_cart' item.id %}" class="shopping-list__button link">Удалить</a>
                     </li>
