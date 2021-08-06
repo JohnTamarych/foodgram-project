@@ -17,7 +17,8 @@ class RecipeForm(ModelForm):
         for key, ingredient_name in self.data.items():
             if key.startswith('nameIngredient'):
                 ingredient_value = self.data['valueIngredient' + key[14:]]
-                self.ingredients[ingredient_name] = float(ingredient_value)
+                float_val = float(ingredient_value.replace(',','.'))
+                self.ingredients[ingredient_name] = float(float_val)
 
     def create_recipe_ingredients(self, recipe):
         for ingredient_title, quantity in self.ingredients.items():

@@ -1,7 +1,7 @@
 {% load sub_funcs %}
-<ul class="single-card__items">
-    {% for tag in recipe.tags.all %}
-        <li class="single-card__item">
+<ul class="card__items">
+    {% for tag in item.tags.all %}
+        <li class="card__item">
             <span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span>
         </li>
     {% endfor %}

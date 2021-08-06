@@ -47,7 +47,22 @@
                         <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
                     </div>
                     <div class="form__field-group-ingredientes-container">
-
+                        {% if edit %}
+                            {% for item in recipe.ingredient_recipe.all %}
+                                <div class="form__field-item-ingredient" id="ing_{{ forloop.counter }}">
+                                    <span>
+                                    {{ item.ingredient.name }} {{ item.value }} {{ item.ingredient.units }}
+                                    </span>
+                                    <span class="form__field-item-delete"></span>
+                                    <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden"
+                                    value="{{ item.ingredient.name }}">
+                                    <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden"
+                                    value="{{ item.value }}">
+                                    <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden"
+                                    value="{{ item.ingredient.units }}">
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
                     {% if ingredients_count %}
@@ -74,11 +89,11 @@
             <div class="form__group">
                 <span class="form__label">Загрузить фото</span>
                 <div class="form__field-group">
-                         {% if is_change %}{{ form.image }}{% else %}
+                        {% if edit %}{{ form.image }}{% else %}
                         <div class="form__file-wrapper">
-                        <label for="id_file" class="form__file-button">Выбрать файл</label>
-                        <input type="file" class="form__file" name="image" id="id_file" onchange="function ShowFileName()">
-                        <span class="form__filename"></span>
+                            <label for="id_file" class="form__file-button">Выбрать файл</label>
+                            <input type="file" class="form__file" name="image" id="id_file" onchange="function ShowFileName()">
+                            <span class="form__filename"></span>
                         </div>
                         {% endif %}
                         <span class="form__error">{{ form.image.errors }}</span>

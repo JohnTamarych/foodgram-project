@@ -6,17 +6,11 @@
     </a>
     <div class="card__body">
         <a href="{% url 'single' item.id %}" class="card__title link">{{ item.title }}</a>
-        <ul class="card__items">
-            {% for tag in item.tags.all %}
-                <li class="card__item">
-                    <span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span>
-                </li>
-            {% endfor %}
-        </ul>
-        <div class="card__items card__items_column">
-            {% include "includes/cooking_time.html" with cooktime=item.cooking_time %}
+        {% include "includes/item_tags.html" %}
+            <div class="card__items card__items_column">
+            <p class="card__text">{% include "includes/cooking_time.html" with cooktime=item.cooking_time %}</p>
             <p class="card__text"><span class="icon-user"></span> 
-                <a href="{% url 'author_recipes' item.author.username %}" style="color: black">{% firstof item.author.get_full_name item.author.username %}</a>
+                <a href="{% url 'author_recipes' item.author.username %}" style="color: black">{% include "includes/author_name.html" with author=item.author %}</a>
             </p>
         </div>
     </div>

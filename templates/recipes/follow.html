@@ -10,7 +10,7 @@
 {% block content %}        
         <div class="card-list">
             {% for creator in page %}
-                {% include "includes/user_card.html" with author=creator %}
+                {% include "includes/user_card.html" with card_author=creator %}
             {% endfor %}
         </div>
         {% if page and page.paginator.count >= page_size %}

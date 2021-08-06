@@ -28,19 +28,14 @@
                     <ul class="single-card__items">
                         {% if user.is_authenticated %}
                         {% if request|is_listed:item %}
-                            <button class="button button_style_blue-outline" name="purchases">
-                                <span class="icon-check button__icon"></span>Убрать из покупок
-                            </button>
+                            {% include "includes/purchase_del_button.html" %}
                         {% else %}
-                            <button class="button button_style_blue" name="purchases" data-out>
-                                <span class="icon-plus button__icon"></span>Добавить в покупки
-                            </button>
+                            {% include "includes/purchase_add_button.html" %}
                         {% endif %}
+                        <p>&nbsp &nbsp</p>
                         {% else %}
                         <a href="{% url 'login' %}">
-                            <button class="button button_style_blue" name="purchases" data-out>
-                                <span class="icon-plus button__icon"></span>Добавить в покупки
-                            </button>
+                            {% include "includes/purchase_add_button.html" %}
                         </a>
                     {% endif %}
 

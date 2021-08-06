@@ -67,7 +67,8 @@ def tags_filter(request, tag):
         tags.remove(str(tag))
         new_request.setlist('tag', tags)
     else:
-        new_request.appendlist('tag', tag)
+        if str(tag) not in tags:
+            new_request.appendlist('tag', tag)
     return new_request.urlencode()
 
 

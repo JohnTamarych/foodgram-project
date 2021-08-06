@@ -8,7 +8,7 @@ from django.urls import reverse
 from foodgram.settings import PAGE_SIZE
 
 from .forms import RecipeForm
-from .models import Cart, Favorite, Follow, Ingredient, Recipe, Tag, User
+from .models import Cart, Favorite, Follow, Ingredient, IngredientRecipe, Recipe, Tag, User
 from .pdfwork import make_pdf
 from .utils import paginate_page, tags_stuff, union_ingredients, used_tags
 
@@ -56,7 +56,7 @@ def single_recipe(request, recipe_id):
     )
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def follow_index(request):
     recipe_list = Recipe.objects.order_by('-pub_date').filter(
         author__following__user=request.user
@@ -64,7 +64,7 @@ def follow_index(request):
 
     recipe_list = tags_stuff(request, recipe_list)
 
-    follows = User.objects.get(pk=request.user.id).follower.all()
+    follows = User.objects.get(username=request.user).follower.all()
     user_list = [follow.author for follow in follows]
     page = paginate_page(request, user_list)
     page_size = PAGE_SIZE
@@ -79,7 +79,7 @@ def follow_index(request):
                   )
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def favorite(request):
     recipe_list = Recipe.objects.filter(favorite_recipes__user=request.user)
     recipe_list = tags_stuff(request, recipe_list)
@@ -136,7 +136,7 @@ def ingredients(request):
 def author_recipes(request, username):
     author = get_object_or_404(User, username=username)
 
-    recipe_list = User.objects.get(pk=author.id).recipes.all().order_by('-pub_date')
+    recipe_list = User.objects.get(username=author.username).recipes.all().order_by('-pub_date')
 
     recipe_list = tags_stuff(request, recipe_list)
     page = paginate_page(request, recipe_list)
@@ -154,7 +154,7 @@ def author_recipes(request, username):
     )
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def edit_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if not request.user.is_staff and recipe.author != request.user:
@@ -166,6 +166,7 @@ def edit_recipe(request, recipe_id):
         )
     recipe_form = RecipeForm(request.POST or None, files=request.FILES or None, instance=recipe)
     if recipe_form.is_valid():
+        IngredientRecipe.objects.filter(recipe=recipe).delete()
         recipe = recipe_form.save(user=request.user)
         return redirect('index')
     edit = True
@@ -182,7 +183,7 @@ def edit_recipe(request, recipe_id):
     )
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
@@ -191,7 +192,7 @@ def delete_recipe(request, recipe_id):
     return redirect(reverse('index'))
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def profile_follow(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -202,7 +203,7 @@ def profile_follow(request):
     return JsonResponse({'success': True})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def profile_unfollow(request, author_id):
     author = get_object_or_404(User, id=author_id)
     follow = Follow.objects.filter(user=request.user, author=author)
@@ -210,7 +211,7 @@ def profile_unfollow(request, author_id):
     return JsonResponse({'success': False})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def add_to_favorites(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -221,15 +222,15 @@ def add_to_favorites(request):
     return JsonResponse({'success': True})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def remove_from_favorites(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     favorite = Favorite.objects.filter(user=request.user, recipe=recipe)
     favorite.delete()
-    return JsonResponse({'success': False})
+    return JsonResponse({'success': True})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def add_to_list(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -240,7 +241,7 @@ def add_to_list(request):
     return JsonResponse({'success': True})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def remove_from_list(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
@@ -248,7 +249,7 @@ def remove_from_list(request, recipe_id):
     return JsonResponse({'success': False})
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def remove_from_cart(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     cart = Cart.objects.filter(user=request.user, recipe=recipe)
