@@ -8,16 +8,17 @@ from django.urls import reverse
 from foodgram.settings import PAGE_SIZE
 
 from .forms import RecipeForm
-from .models import Cart, Favorite, Follow, Ingredient, IngredientRecipe, Recipe, Tag, User
+from .models import Cart, Favorite, Follow, Ingredient, Recipe, Tag, User
 from .pdfwork import make_pdf
 from .utils import paginate_page, tags_stuff, union_ingredients, used_tags
 
 
-@login_required(login_url='/auth/login/')
+@login_required
 def new_recipe(request):
     recipe_form = RecipeForm(request.POST or None, files=request.FILES or None)
     if recipe_form.is_valid():
-        recipe = recipe_form.save(user=request.user)
+        recipe_form.instance.author = request.user
+        recipe = recipe_form.save()
         return redirect('index')
     return render(
         request,
@@ -34,14 +35,16 @@ def index(request):
     recipe_list = tags_stuff(request, recipe_list)
     page = paginate_page(request, recipe_list)
     page_size = PAGE_SIZE
-    return render(request,
-                  'recipes/index.html', {
-                    'page': page,
-                    'page_size': page_size,
-                    'all_tags': Tag.objects.all(),
-                    'tags': used_tags(request),
-                }
-            )
+    return render(
+        request,
+        'recipes/index.html',
+        {
+            'page': page,
+            'page_size': page_size,
+            'all_tags': Tag.objects.all(),
+            'tags': used_tags(request),
+        }
+    )
 
 
 def single_recipe(request, recipe_id):
@@ -64,7 +67,7 @@ def follow_index(request):
 
     recipe_list = tags_stuff(request, recipe_list)
 
-    follows = User.objects.get(username=request.user).follower.all()
+    follows = request.user.follower.all()
     user_list = [follow.author for follow in follows]
     page = paginate_page(request, user_list)
     page_size = PAGE_SIZE
@@ -136,7 +139,7 @@ def ingredients(request):
 def author_recipes(request, username):
     author = get_object_or_404(User, username=username)
 
-    recipe_list = User.objects.get(username=author.username).recipes.all().order_by('-pub_date')
+    recipe_list = author.recipes.all().order_by('-pub_date')
 
     recipe_list = tags_stuff(request, recipe_list)
     page = paginate_page(request, recipe_list)
@@ -166,7 +169,6 @@ def edit_recipe(request, recipe_id):
         )
     recipe_form = RecipeForm(request.POST or None, files=request.FILES or None, instance=recipe)
     if recipe_form.is_valid():
-        IngredientRecipe.objects.filter(recipe=recipe).delete()
         recipe = recipe_form.save(user=request.user)
         return redirect('index')
     edit = True
@@ -262,15 +264,3 @@ def download_pdf_ingredients(request):
     buffer = make_pdf(all_ingredients)
 
     return FileResponse(buffer, as_attachment=True, filename='to_buy.pdf')
-
-
-def handler404(request, *args, **argv):
-    response = render('includes/404.html')
-    response.status_code = 404
-    return response
-
-
-def handler500(request, *args, **argv):
-    response = render('includes/404.html')
-    response.status_code = 500
-    return response

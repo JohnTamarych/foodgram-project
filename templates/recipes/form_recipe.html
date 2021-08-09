@@ -65,9 +65,7 @@
                         {% endif %}
                     </div>
                     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-                    {% if ingredients_count %}
-                        <span class="form__error">Добавьте ингредиенты</span>
-                    {% endif %}
+                    <span class="form__error">{{ form.non_field_errors }}</span>
                 </div>
             </div>
             <div class="form__group">

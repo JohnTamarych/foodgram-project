@@ -33,10 +33,6 @@
                             {% include "includes/purchase_add_button.html" %}
                         {% endif %}
                         <p>&nbsp &nbsp</p>
-                        {% else %}
-                        <a href="{% url 'login' %}">
-                            {% include "includes/purchase_add_button.html" %}
-                        </a>
                     {% endif %}
 
                             {% if request.user != recipe.author %} 

@@ -63,17 +63,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': os.environ.get('DB_NAME', default='postgres'),
-        'USER': os.environ.get('POSTGRES_USER', default='postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', default='1234qwerty'),
-        'HOST': os.environ.get('DB_HOST', default='db'),
-        'PORT': os.environ.get('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.environ.get('DB_ENGINE', default='django.db.backends.postgresql'),
+#         'NAME': os.environ.get('DB_NAME', default='postgres'),
+#         'USER': os.environ.get('POSTGRES_USER', default='postgres'),
+#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', default='1234qwerty'),
+#         'HOST': os.environ.get('DB_HOST', default='db'),
+#         'PORT': os.environ.get('DB_PORT', default='5432'),
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -122,8 +128,8 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
-LOGIN_URL='/auth/login/'
+LOGIN_URL = '/auth/login'
 
 ABSOLUTE_URL_OVERRIDES = {
-    'login.redirect': lambda o: "/blogs/%s/" % o.slug,
+    'login.redirect': lambda o: '/blogs/%s/' % o.slug,
 }
